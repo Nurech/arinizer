@@ -75,9 +75,9 @@ reaching out,reach out,awesome,one hand,other hand,given thesis,smashing,whoppin
           }
           // Split by period but not by comma
           return content
-            .split(/(?<!,)\./)
-            .map((sentence) => sentence.trim())
-            .filter(Boolean);
+          .split(/[.!?]/)
+          .map((sentence) => sentence.trim())
+          .filter(Boolean);
         },
 
         removeNewlines(input) {
