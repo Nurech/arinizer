@@ -3,8 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="index.js"></script>
     <title>Tex Analyzer</title>
+    <style>
+      h1,
+      h2 {
+        font-family: Lato;
+      }
+
+      .sentenceBox {
+        border: 1px solid #ccc;
+        padding: 5px;
+        white-space: pre-line; /* Preserves whitespace and line breaks */
+        overflow-y: auto;
+        height: 50px; /* Adjust as necessary */
+        margin-bottom: 10px;
+      }
+
+      .highlight {
+        color: red;
+        font-size: 30px;
+        font-weight: 900;
+      }
+
+      .badSentence {
+        border: 1px solid red;
+        margin: 3px 0;
+      }
+    </style>
   </head>
   <body>
     Adrinizer™ - Word counting in sentences and scanning of banned words. Your
@@ -35,6 +60,128 @@ reaching out,reach out,awesome,one hand,other hand,given thesis,smashing,whoppin
     >
     <br />Bad sentances:<br />
     <div id="stats"></div>
-    <script src="index.js"></script>
+    <script type="module">
+      // --- Utility Functions ---
+
+      const TextProcessUtils = {
+        splitIntoSentences(content) {
+          const latexPatterns = [
+            /\\input{.*?}/g,
+            /~\\ref{.*?}/g,
+            /\\section{.*?}/g,
+          ];
+          for (let pattern of latexPatterns) {
+            content = content.replace(pattern, '');
+          }
+          // Split by period but not by comma
+          return content
+            .split(/(?<!,)\./)
+            .map((sentence) => sentence.trim())
+            .filter(Boolean);
+        },
+
+        removeNewlines(input) {
+          return input.replace(/\n/g, ' ').trim();
+        },
+      };
+
+      const SentenceProcessUtils = {
+        process(sentence, forbiddenWords) {
+          let wordIndex = 1;
+          let wordsWithHighlights = sentence.split(/\s+/).map((word) => {
+            for (let forbidden of forbiddenWords) {
+              if (word.toLowerCase().includes(forbidden)) {
+                word = `<span class="highlight">${word}</span>`;
+              }
+            }
+            if (
+              !word.match(/^\[\d+(,\d+)*\]$/) &&
+              !word.match(/,\d+$/) &&
+              !word.match(/^\[\d+(,\d+)*\],\d+$/)
+            ) {
+              word += `<sup>${wordIndex}</sup>`;
+              wordIndex++;
+            }
+            return word;
+          });
+
+          const cleaned = wordsWithHighlights.join(' ');
+          let words = cleaned
+            .split(/\s+/)
+            .filter(
+              (word) =>
+                !word.match(/<sup>\(\d+\)<\/sup>/) &&
+                !word.match(/^\[\d+(,\d+)*\]$/) &&
+                !word.match(/,\d+$/) &&
+                !word.match(/^\[\d+(,\d+)*\],\d+$/)
+            );
+
+          if (words.length === 0) {
+            return null;
+          }
+
+          return {
+            cleaned,
+            words,
+          };
+        },
+      };
+
+      // --- Core Logic ---
+
+      function processContent(content, forbiddenWords) {
+        let sentences = TextProcessUtils.splitIntoSentences(content);
+        sentences = sentences.map(TextProcessUtils.removeNewlines);
+
+        console.log('sentences:', sentences);
+
+        const processed = sentences
+          .map((sentence) =>
+            SentenceProcessUtils.process(sentence, forbiddenWords)
+          )
+          .filter(Boolean);
+
+        processed.sort((a, b) => b.words.length - a.words.length);
+
+        console.log(processed);
+        return processed;
+      }
+
+      function displayProcessedContent() {
+        const texContent = document.getElementById('texInput').value;
+        const forbiddenWords = document
+          .getElementById('bannedWordsInput')
+          .value.split(',');
+        const processedSentences = processContent(texContent, forbiddenWords);
+
+        const filteredSentences = processedSentences.filter((item) => {
+          return (
+            item.words.length >= 30 ||
+            item.cleaned.includes('<span class="highlight">')
+          );
+        });
+
+        const statsDiv = document.getElementById('stats');
+        statsDiv.innerHTML = '';
+        for (let item of filteredSentences) {
+          const div = document.createElement('div');
+          div.classList.add('badSentence');
+          div.innerHTML = `${item.cleaned}<br><br>`;
+          statsDiv.appendChild(div);
+        }
+      }
+
+      // --- Event Listeners ---
+
+      document
+        .getElementById('texInput')
+        .addEventListener('input', displayProcessedContent);
+      document
+        .getElementById('bannedWordsInput')
+        .addEventListener('input', displayProcessedContent);
+
+      // Start by reading default value from the textbox for the text and then process it
+      displayProcessedContent();
+    </script>
   </body>
 </html>
