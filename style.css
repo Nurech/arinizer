@@ -1,0 +1,24 @@
+h1,
+h2 {
+  font-family: Lato;
+}
+
+.sentenceBox {
+  border: 1px solid #ccc;
+  padding: 5px;
+  white-space: pre-line; /* Preserves whitespace and line breaks */
+  overflow-y: auto;
+  height: 50px; /* Adjust as necessary */
+  margin-bottom: 10px;
+}
+
+.highlight {
+  color: red;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.badSentence {
+  border: 1px solid red;
+  margin: 3px 0;
+}

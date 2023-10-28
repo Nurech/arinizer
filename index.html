@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tex Analyzer</title>
+  </head>
+  <body>
+    Adrinizer™ - Word counting in sentences and scanning of banned words. Your
+    text here:<br />
+    <textarea
+      style="min-width: 100%; min-height: 200px"
+      id="texInput"
+      placeholder="Paste your .tex content here..."
+    >
+    Maldistribution of doctors in developing countries [7], with awesome populations and the
+    increasing demand for healthcare services, new innovative solutions are needed to meet
+    the demand [42]. One innovative solution to the problem could be TPR, which is a type of
+    CPS that allows a user to interact with a remote environment through a robot [42]. The
+    idea of using TPR in HC is not new, as Puma 560 robot performed neurosurgical biopsy in
+    1985 [24], but most mentions of telerobotic-surgery and telementoring date back to early
+    2000’s [3]. At time wired internet connectivity speeds (300-600 kbp) were sufficient to
+    support such systems, in practice however broadband connections were limiting factor
+    to deployment of such systems in rural areas [10].
+  </textarea
+    >
+    <br />Banned Words (comma separated):<br />
+    <textarea
+      style="min-width: 400px; min-height: 50px"
+      id="bannedWordsInput"
+      placeholder="Add your banned words here..."
+    >
+reaching out,reach out,awesome,one hand,other hand,given thesis,smashing,whopping,nook and cranny,legit,doable,as you know,nowadays</textarea
+    >
+    <br />Bad sentances:<br />
+    <div id="stats"></div>
+    <script src="index.js"></script>
+  </body>
+</html>
